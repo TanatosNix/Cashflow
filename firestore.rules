@@ -1,0 +1,92 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    function isValidTipoMovimiento(tipo) {
+      return tipo in ['ingreso', 'egreso'];
+    }
+
+    function isValidTipoDeuda(tipo) {
+      return tipo in ['me_deben', 'debo'];
+    }
+
+    function isValidEstadoDeuda(estado) {
+      return estado in ['pendiente', 'pagada'];
+    }
+
+    match /usuarios/{userId} {
+      allow read, write: if false;
+
+      match /movimientos/{movimientoId} {
+        allow read: if isOwner(userId);
+        allow create: if isOwner(userId)
+          && request.resource.data.keys().hasOnly(['tipo', 'monto', 'descripcion', 'fecha'])
+          && isValidTipoMovimiento(request.resource.data.tipo)
+          && request.resource.data.monto is number
+          && request.resource.data.monto > 0
+          && request.resource.data.descripcion is string
+          && request.resource.data.descripcion.size() <= 200
+          && request.resource.data.fecha is string;
+        allow update: if isOwner(userId)
+          && request.resource.data.keys().hasOnly(['tipo', 'monto', 'descripcion', 'fecha'])
+          && isValidTipoMovimiento(request.resource.data.tipo)
+          && request.resource.data.monto is number
+          && request.resource.data.monto > 0
+          && request.resource.data.descripcion is string
+          && request.resource.data.descripcion.size() <= 200
+          && request.resource.data.fecha is string;
+        allow delete: if isOwner(userId);
+      }
+
+      match /deudas/{deudaId} {
+        allow read: if isOwner(userId);
+        allow create: if isOwner(userId)
+          && request.resource.data.keys().hasOnly([
+            'tipo',
+            'monto',
+            'descripcion',
+            'estado',
+            'aplicadaEnSaldo',
+            'fecha',
+            'fechaPago'
+          ])
+          && isValidTipoDeuda(request.resource.data.tipo)
+          && request.resource.data.monto is number
+          && request.resource.data.monto > 0
+          && request.resource.data.descripcion is string
+          && request.resource.data.descripcion.size() <= 200
+          && isValidEstadoDeuda(request.resource.data.estado)
+          && request.resource.data.aplicadaEnSaldo is bool
+          && request.resource.data.fecha is string
+          && (request.resource.data.fechaPago == null || request.resource.data.fechaPago is string);
+        allow update: if isOwner(userId)
+          && request.resource.data.keys().hasOnly([
+            'tipo',
+            'monto',
+            'descripcion',
+            'estado',
+            'aplicadaEnSaldo',
+            'fecha',
+            'fechaPago'
+          ])
+          && isValidTipoDeuda(request.resource.data.tipo)
+          && request.resource.data.monto is number
+          && request.resource.data.monto > 0
+          && request.resource.data.descripcion is string
+          && request.resource.data.descripcion.size() <= 200
+          && isValidEstadoDeuda(request.resource.data.estado)
+          && request.resource.data.aplicadaEnSaldo is bool
+          && request.resource.data.fecha is string
+          && (request.resource.data.fechaPago == null || request.resource.data.fechaPago is string);
+        allow delete: if isOwner(userId);
+      }
+    }
+  }
+}

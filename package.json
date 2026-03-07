@@ -1,0 +1,35 @@
+{
+  "type": "module",
+  "name": "cashflow",
+  "version": "1.0.0",
+  "scripts": {
+    "dev": "vite",
+    "lint": "eslint .",
+    "build": "vite build",
+    "preview": "vite preview",
+    "check": "npm run lint && npm run build",
+    "test:rules": "firebase emulators:exec --only firestore \"node tests/firestore.rules.test.mjs\""
+  },
+  "dependencies": {
+    "date-fns": "^4.1.0",
+    "firebase": "^10.0.0",
+    "html2canvas": "^1.4.1",
+    "jspdf": "^2.5.1",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  },
+  "devDependencies": {
+    "@firebase/rules-unit-testing": "^3.0.1",
+    "@vitejs/plugin-react": "^4.6.0",
+    "autoprefixer": "^10.4.21",
+    "eslint": "^9.32.0",
+    "eslint-plugin-react-hooks": "^5.2.0",
+    "eslint-plugin-react-refresh": "^0.4.20",
+    "firebase-tools": "^13.35.1",
+    "globals": "^16.3.0",
+    "postcss": "^8.5.6",
+    "tailwindcss": "^3.4.17",
+    "vite": "^4.5.0",
+    "vite-plugin-pwa": "^1.0.1"
+  }
+}
