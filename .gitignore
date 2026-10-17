@@ -1,3 +1,22 @@
 node_modules
 /dist
 .env
+
+# Local credentials, deployment state and logs
+.env.*
+!.env.example
+.firebaserc
+.firebase/
+*.log
+desktop.ini
+Thumbs.db
+.idea/
+.vscode/
+*service-account*.json
+*service_account*.json
+*.pem
+*.key
+*.p12
+*.pfx
+cookies*.txt
+cookies*.json
